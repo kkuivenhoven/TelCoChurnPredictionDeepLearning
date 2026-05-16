@@ -5,7 +5,6 @@ def sigmoid(z):
 	s = 1 / (1 + np.exp(-z))
 	return s
 
-# def predict(parameters, X):
 def predict(parameters, X, layer_dims):
 	_cache, size = forward_propagation(X, layer_dims, parameters)
 	last_A_value = _cache["A" + str(size)]	
@@ -27,6 +26,8 @@ def forward_propagation(X_norm, layer_dims, parameters):
 	_cache["A" + str(size)] = sigmoid(_cache["Z" + str(size)])
 	return _cache, size
 
+np.random.seed(42)
+
 dataFrame = pd.read_csv('WA-Customer-Churn.csv')
 
 dataFrame["TotalCharges"] = pd.to_numeric(dataFrame["TotalCharges"].str.strip(), errors='coerce').fillna(0).astype(float)
@@ -38,7 +39,6 @@ dataFrame = dataFrame.drop('customerID', axis=1)
 # below encodes every string column at once and keeps the numerical columns (Charges/Tenure) safe.
 # This is a "bulk move" rather than calling out each column at once
 dataFrame = pd.get_dummies(dataFrame)
-# dataFrame = dataFrame.apply(pd.to_numeric, errors='raise')
 dataFrame = dataFrame.astype(float)
 
 Y_df = dataFrame["Churn_Yes"] # Use Churn_Yes (not Churn_No) since want the model to predict the
@@ -47,11 +47,12 @@ Y_df = dataFrame["Churn_Yes"] # Use Churn_Yes (not Churn_No) since want the mode
 dataFrame = dataFrame.drop('Churn_No', axis=1)
 dataFrame = dataFrame.drop('Churn_Yes', axis=1)
 
+true_network_features = dataFrame.columns.tolist()
+
 # Shape is (m, nx) where m is rows (customers) and nx is columns (features)
 # for this, need (nx, m)
 
 # Transpose such that each column represents a customer and each row represents a feature
-# Y_df = Y_df.to_frame()
 Y_df = Y_df.values.reshape(-1, 1)
 Y_df = Y_df.T
 X_df = dataFrame.T
@@ -77,7 +78,6 @@ X_norm = ((X_df - mu)/std_dev)
 
 print(X_norm.shape)
 # [Input, Hidden1, Hidden2, Output]
-# layer_dims = [45, 20, 7, 1]
 layer_dims = [45, 20, 7, 1]
 learning_rate = 0.01
 
@@ -90,26 +90,16 @@ for l in range(1, len(layer_dims)):
 
 for i in range(3000):
 	# Forward pass belongs here - think of it as like taking a practice exam
-	# cache["A" + str(0)] = X_norm
-	# for l in range(1, len(layer_dims) - 1):
-		# The "Forward Pass" Architecture
-		# cache["Z" + str(l)] = np.dot(parameters["W" + str(l)], cache["A" + str(l-1)]) + parameters["b" + str(l)]
-		# ReLU function
-		# cache["A" + str(l)] = np.maximum(0, cache["Z" + str(l)])
-    
-	# size = ((len(layer_dims)) - 1)
-	# cache["Z" + str(size)] = np.dot(parameters["W" + str(size)], cache["A" + str(size-1)]) + parameters["b" + str(size)]
-	# cache["A" + str(size)] = sigmoid(cache["Z" + str(size)])
 	cache, size = forward_propagation(X_norm, layer_dims, parameters)
 
-    # --- STEP C: COMPUTE COST ---
+    # --- COMPUTE COST ---
     # We need to see how wrong A3 is compared to Y.
 	m = X_df.shape[1] # m is the # of the columns in the matrix X_df
 	inner = (Y_df * np.log(cache["A" + str(size)])) + (1 - Y_df)*(np.log(1-cache["A" + str(size)]))
 	cost = (-1)*(1/m)*np.sum(inner)
     
 	grads = {}
-    # --- STEP D: BACKWARD PASS ---
+    # --- BACKWARD PASS ---
     # Finding dW and db using the chain rule.
 	grads["dZ" + str(size)] = (cache["A" + str(size)] - Y_df)
 	for l in range(len(layer_dims) - 1, 0, -1):
@@ -125,14 +115,6 @@ for i in range(3000):
 			grads["dA" + str(l-1)] = np.dot(parameters["W" + str(l)].T, grads["dZ" + str(l)])
 
 			# Step 2: apply the "activation gate" (the ReLU derivative)
-			# instead of an if-statement, use a mask to filter the entire matrix
-			dZ_prev = np.array(grads["dA" + str(l-1)], copy=True)
-			history_Z_prev = cache["Z" + str(l-1)]
-			# creates a boolean matrix of the exact same shape as the Z values
-			# in which every element is either True or False
-			# dZ_prev[history_Z_prev <= 0] = 0
-
-			# more verbose way:
 			# step a1: create the "gate" (the ReLU derivative)
 			# this creates a matrix of 1s and 0s
 			# 1.0 if Z > 0, else 0.0
@@ -153,7 +135,6 @@ for i in range(3000):
 		parameters["W" + str(l)] = parameters["W" + str(l)] - learning_rate * grads["dW" + str(l)]
 		parameters["b" + str(l)] = parameters["b" + str(l)] - learning_rate * grads["db" + str(l)]
 
-
 	if i % 100 == 0:
 		print(f"Cost after iteration {i}: {cost}")
 
@@ -162,21 +143,14 @@ predictions = predict(parameters, X_norm, layer_dims)
 accuracy = np.mean(predictions == Y_df)
 
 print(f"Final Model Accuracy: {accuracy * 100:.2f}%")
-print(dataFrame.columns)
-print("     ")
-print(dataFrame.columns.tolist())
 
 parameter_W1 = parameters["W1"]
 parameter_W1 = np.abs(parameter_W1)
-
 mean_values = np.mean(parameter_W1, axis=0)
-print(" ------ mean values: -------- ")
-print(mean_values)
-
 max_index = np.argmax(mean_values)
-print(" ----- max_index: ---------")
-print(max_index)
 
-print("dataFrame: ")
-column_names = dataFrame.columns
-print(column_names[max_index])
+all_sorted_indices = np.argsort(mean_values)
+top_5_indices = all_sorted_indices[-5:][::-1]
+print("Top 5 Most Predictive Features:")
+for rank, index in enumerate(top_5_indices, 1):
+	print(f"{rank}. {true_network_features[index]} (Score: {mean_values[index]:.6f})")
