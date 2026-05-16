@@ -84,8 +84,8 @@ X_df = X_df.to_numpy()
 # "energy levels". I.e. monthly charges ranging from 20 to 120, but SeniorCitizen is 0 or 1
 # and Gender_male is 0 or 1.
 # IF we do NOT normalize, the W weights connected to MonthlyCharges will have to be tiny, while
-# the weights for Gender will have to be huge. This results in "brittle" math. We need every
-# feature to have a mean of 0 and a standard deviation of 1.
+# the weights for Gender will have to be huge. This results in "brittle" math or scale sensitivity. 
+# We need every feature to have a mean of 0 and a standard deviation of 1.
 
 # Our X at this point is (45, 7043) - Axis 0 is 45 features while Axis 1 is 7043 customers
 mu = np.mean(X_df, axis = 1, keepdims=True)
