@@ -58,9 +58,6 @@ Y_df = Y_df.T
 X_df = dataFrame.T
 X_df = X_df.to_numpy()
 
-print(Y_df.shape)
-print(X_df.shape)
-
 # need to normalize (level the playing field) since have features with completely different
 # "energy levels". I.e. monthly charges ranging from 20 to 120, but SeniorCitizen is 0 or 1
 # and Gender_male is 0 or 1.
