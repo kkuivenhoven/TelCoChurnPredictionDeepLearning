@@ -1,3 +1,25 @@
+# 4-Layer Deep Neural Network (MLP) from scratch
+# Binary classification: Customer Churn Prediction (0 = Retained, 1 = Churned/lost)
+#
+# Topology: [45 input features] -> [20 hidden] => [7 hidden] -> [1 output probability]
+#
+# Correct order of operations:
+# 1. Forward propagation:
+# 	- Linearly combine inputs and weights, then apply activation functions layer by layer.
+# 	- Z1, A1 (ReLU) -> Z2, A2 (ReLU) -> Z3, A3 (ReLU) -> Z4, A4 (Sigmoid/Y-hat)
+# 2. Compute Cost:
+# 	- Run Binary Cross-Entropy Loss to measure the mathematical delta between the final
+#     output vector (A4) and the true ground-truth labels (Y).
+# 3. Backward Propagation:	
+#	- Execute the chain rule backward through all 4 layers to compute partial derivatives.
+# 	- Track loss gradients down to dW and db for every single layer matrix
+# 4. Update parameters:
+#	- Apply gradient descent updates to shift the weight and bias matrices in the opposite
+#	  direction of the cost gradient (W = W - alpha * dW)
+# 5. Iterative Optimization Loop:
+#	- Repeat steps 1-4 across 3,000 iterations using a fixed random seed stabilizer until
+#	  the model converges and weight distributions settle.
+
 import numpy as np
 import pandas as pd
 
