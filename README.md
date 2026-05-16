@@ -4,8 +4,8 @@ A neural network built using 4 layers (2 hidden) to find the most likely feature
 
 The engine uses NumPy instead of a library like Scikit-learn or Tensorflow. The purpose of this Neural Network is to simply take the features presented in the data file and determine the top 5 most likely categories to predict customer cancellation.
 
-## Project Overview
-# Data Inputs
+# Project Overview
+### Data Inputs
 - TelCo Customer Churn data
 
 ### The Brain
