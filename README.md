@@ -17,7 +17,7 @@ The function sigmoid was used to force the final output to be a percentage betwe
 Through the manual writing of calculus for forward and backward pass, I learned how the neural network would update its derivatives of weights, biases, activation values and its z values.
 
 ### Data Preprocessing (Normalization)
-The data had to be normalized using mean and standard deviation. The reason for this is that the category SeniorCitizen has values of 0 or 1. However, the category MonthlyCharges could be 5 to 50 in range of values. Without normalization, the math would've been considered "brittle". Thus, normalizing every feature to have a mean of 0 and a standard deviation prevents "brittle" math and weights that could've been really small for categories like MonthlyCharges otherwise.
+The data had to be normalized using mean and standard deviation. The reason for this is that the category SeniorCitizen has values of 0 or 1. However, the category MonthlyCharges could be 20 to 120+ in range of values. Without normalization, the math would've been considered "brittle". Thus, normalizing every feature to have a mean of 0 and a standard deviation of 1 prevents "brittle" math and weights that could've been really small for categories like MonthlyCharges otherwise.
 
 
 ### Challenges & Discoveries
